@@ -1,0 +1,3 @@
+requests =2.10.*
+packaging =16.*
+pygithub =1.26.*
