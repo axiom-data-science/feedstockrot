@@ -1,10 +1,10 @@
+from .source import Source
 from github.Repository import Repository
 from typing import List, Set
 import requests
-from packaging.version import Version
 
 
-class Condaforge:
+class Condaforge(Source):
 
     DEFAULT_OWNER = 'conda-forge'
     DEFAULT_PLATFORM = 'linux-64'
@@ -52,13 +52,9 @@ class Condaforge:
     # transition to a search API, as conda's repodata method probably won't scale
 
     @classmethod
-    def _find_package_versions(cls, name: str) -> Set[Version]:
+    def _fetch_package_versions(cls, name: str) -> Set[str]:
         versions = set()
         for package_name, package in cls._get_repodata()['packages'].items():
             if package['name'] == name:
                 versions.add(package['version'])
         return versions
-
-    @classmethod
-    def get_package_versions(cls, name: str) -> Set[Version]:
-        return map(lambda v: Version(v), cls._find_package_versions(name))

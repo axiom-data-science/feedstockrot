@@ -1,4 +1,5 @@
-from .condaforge import Condaforge
+from .package_sources.condaforge import Condaforge
+from .package_sources.pypi import Pypi
 
 
 class Package:
@@ -21,7 +22,7 @@ class Package:
     @property
     def versions_pypi(self):
         if not self._fetched_pypi:
-            self._versions_pypi = None  # TODO
+            self._versions_pypi = Pypi.get_package_versions(self.name)
             self._fetched_pypi = True
         return self._versions_pypi
 

@@ -1,6 +1,6 @@
 from github.Repository import Repository
 from typing import List
-from .condaforge import Condaforge
+from .package_sources.condaforge import Condaforge
 from .package import Package
 
 

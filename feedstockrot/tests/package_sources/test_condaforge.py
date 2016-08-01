@@ -1,7 +1,6 @@
 from unittest import TestCase
 from github.Repository import Repository
-from packaging.version import Version
-from feedstockrot.condaforge import Condaforge
+from feedstockrot.package_sources.condaforge import Condaforge
 
 
 class TestCondaforge(TestCase):
@@ -53,9 +52,9 @@ class TestCondaforge(TestCase):
             }
         }
 
-        result_a = Condaforge._find_package_versions("package_a")
+        result_a = Condaforge._fetch_package_versions("package_a")
         expected_a = {'1.0', '1.2', '2.0'}
         self.assertSetEqual(result_a, expected_a)
 
-        result_b = Condaforge._find_package_versions("package_b")
+        result_b = Condaforge._fetch_package_versions("package_b")
         self.assertSetEqual(result_b, {'1.0'})
