@@ -53,10 +53,9 @@ class TestCondaforge(TestCase):
             }
         }
 
-        # use a set here because order is not guaranteed
-        result_a = set(Condaforge.find_package_versions("package_a"))
+        result_a = Condaforge._find_package_versions("package_a")
         expected_a = {'1.0', '1.2', '2.0'}
         self.assertSetEqual(result_a, expected_a)
 
-        result_b = Condaforge.find_package_versions("package_b")
-        self.assertListEqual(result_b, ['1.0'])
+        result_b = Condaforge._find_package_versions("package_b")
+        self.assertSetEqual(result_b, {'1.0'})

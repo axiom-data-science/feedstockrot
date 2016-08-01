@@ -1,6 +1,7 @@
 from github.Repository import Repository
-from typing import List
+from typing import List, Set
 import requests
+from packaging.version import Version
 
 
 class Condaforge:
@@ -51,9 +52,13 @@ class Condaforge:
     # transition to a search API, as conda's repodata method probably won't scale
 
     @classmethod
-    def find_package_versions(cls, name):
-        versions = []
+    def _find_package_versions(cls, name: str) -> Set[Version]:
+        versions = set()
         for package_name, package in cls._get_repodata()['packages'].items():
-            if package['name'] == name and package['version'] not in versions:
-                versions.append(package['version'])
+            if package['name'] == name:
+                versions.add(package['version'])
         return versions
+
+    @classmethod
+    def get_package_versions(cls, name: str) -> Set[Version]:
+        return map(lambda v: Version(v), cls._find_package_versions(name))
