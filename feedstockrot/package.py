@@ -23,7 +23,7 @@ class Package:
     def versions_pypi(self):
         if not self._fetched_pypi:
             versions = Pypi.get_package_versions(self.name)
-            # TODO: multi-line:
+            # TODO:
             # - better error handling here
             # - handle cases where conda and pypi packages have different names
 

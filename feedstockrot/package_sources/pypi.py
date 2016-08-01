@@ -1,6 +1,5 @@
 from .source import Source
 import requests
-from json.decoder import JSONDecodeError
 from typing import Dict, Set
 
 
@@ -9,12 +8,14 @@ class Pypi(Source):
 
     @classmethod
     def _fetch_package(cls, name) -> Dict:
-        return requests.get(cls.DEFAULT_PACKAGE_URL.format(name)).json()
+        resp = requests.get(cls.DEFAULT_PACKAGE_URL.format(name))
+        if resp.status_code != 200:
+            return None
+        return resp.json()
 
     @classmethod
     def _fetch_package_versions(cls, name: str) -> Set[str]:
-        try:
-            resp = cls._fetch_package(name)
-        except JSONDecodeError:
+        resp = cls._fetch_package(name)
+        if not resp:
             return None
         return resp['releases'].keys()
