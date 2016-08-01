@@ -1,6 +1,7 @@
 import abc
 from typing import Set
 from packaging.version import Version, InvalidVersion
+import logging
 
 
 class Source(metaclass=abc.ABCMeta):
@@ -21,6 +22,7 @@ class Source(metaclass=abc.ABCMeta):
             try:
                 version = Version(version_str)
             except InvalidVersion:
+                logging.info("Got invalid version for {}: {}".format(package_name, version_str))
                 continue
             versions.add(version)
         return versions
