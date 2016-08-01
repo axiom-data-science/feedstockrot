@@ -22,9 +22,33 @@ class Package:
     @property
     def versions_pypi(self):
         if not self._fetched_pypi:
-            self._versions_pypi = Pypi.get_package_versions(self.name)
+            versions = Pypi.get_package_versions(self.name)
+            # TODO: multi-line:
+            # - better error handling here
+            # - handle cases where conda and pypi packages have different names
+
+            if versions is not None:
+                self._versions_pypi = versions
             self._fetched_pypi = True
         return self._versions_pypi
+
+    @property
+    def _external_versions(self):
+        # for future expansion
+        return self.versions_pypi
+
+    @property
+    def _external_upgradeable_versions(self):
+        versions = self._external_versions
+
+        # Only newer versions:
+        versions = filter(lambda v: v > self.latest_feedstock_version, versions)
+
+        # Only early versions if we're already on one:
+        if not self.latest_feedstock_version.is_prerelease:
+            versions = filter(lambda v: not v.is_prerelease, versions)
+
+        return versions
 
     @property
     def latest_feedstock_version(self):
@@ -32,9 +56,14 @@ class Package:
 
     @property
     def latest_external_version(self):
-        return max(self.versions_pypi, default=None)
+        return max(self._external_versions, default=None)
+
+    @property
+    def latest_external_upgradeable_version(self):
+        return max(self._external_upgradeable_versions, default=None)
 
     def __str__(self):
-        return "<{} condaforge={} external={}>".format(
-            self.name, self.latest_feedstock_version, self.latest_external_version
+        return "<{} condaforge={} external={} upgradeable={}>".format(
+            self.name, self.latest_feedstock_version,
+            self.latest_external_version, self.latest_external_upgradeable_version
         )
