@@ -1,6 +1,6 @@
 from .source import Source
 from github.Repository import Repository
-from typing import List, Set
+from typing import Set, Iterable
 import requests
 
 
@@ -8,27 +8,28 @@ class Condaforge(Source):
 
     DEFAULT_OWNER = 'conda-forge'
     DEFAULT_PLATFORM = 'linux-64'
+    DEFAULT_REPODATA_URL = 'https://conda.anaconda.org/{}/{}/repodata.json'
 
     _repodata = None
 
     @classmethod
-    def extract_feedstock_names(cls, repos: List[Repository]) -> List[str]:
+    def extract_feedstock_names(cls, repos: Iterable[Repository]) -> Iterable[str]:
         return map(lambda repo: repo.name.replace('-feedstock', ''), repos)
 
     @classmethod
-    def filter_feedstocks(cls, repos: List[Repository]) -> List[Repository]:
+    def filter_feedstocks(cls, repos: Iterable[Repository]) -> Iterable[Repository]:
         """
         Filter a list of repositories down to only the ones that are valid feedstocks
         """
-        return [repo for repo in repos if repo.name.endswith('-feedstock')]
+        return filter(lambda repo: repo.name.endswith('-feedstock'), repos)
 
     @classmethod
-    def filter_owner(cls, repos: List[Repository], owner=DEFAULT_OWNER):
+    def filter_owner(cls, repos: Iterable[Repository], owner=DEFAULT_OWNER) -> Iterable[Repository]:
         """
         Filter a list of repositories to only those owned by the specified user.
         This is meant to be used to hide forks and only show official repositories.
         """
-        return [repo for repo in repos if repo.owner.name == owner]
+        return filter(lambda repo: repo.owner.name == owner, repos)
 
     @classmethod
     def _get_repodata(cls):
@@ -44,12 +45,9 @@ class Condaforge(Source):
         }
         """
         if cls._repodata is None:
-            url = 'https://conda.anaconda.org/{}/{}/repodata.json'.format(cls.DEFAULT_OWNER, cls.DEFAULT_PLATFORM)
+            url = cls.DEFAULT_REPODATA_URL.format(cls.DEFAULT_OWNER, cls.DEFAULT_PLATFORM)
             cls._repodata = requests.get(url).json()
         return cls._repodata
-
-    # don't expose repodata directly so that in the future we can
-    # transition to a search API, as conda's repodata method probably won't scale
 
     @classmethod
     def _fetch_package_versions(cls, name: str) -> Set[str]:
