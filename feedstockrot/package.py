@@ -25,7 +25,6 @@ class Package:
             versions = Pypi.get_package_versions(self.name)
             # TODO:
             # - better error handling here
-            # - handle cases where conda and pypi packages have different names
 
             if versions is not None:
                 self._versions_pypi = versions

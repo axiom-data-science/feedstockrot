@@ -1,5 +1,5 @@
 import abc
-from typing import Set
+from typing import Iterable, Set
 from packaging.version import Version, InvalidVersion
 import logging
 
@@ -7,14 +7,26 @@ import logging
 class Source(metaclass=abc.ABCMeta):
 
     @abc.abstractclassmethod
-    def _fetch_package_versions(self, name: str) -> Set[str]:
+    def _fetch_package_versions(cls, name: str) -> Set[str]:
         pass
+
+    @classmethod
+    def _possible_names(cls, name: str) -> Iterable[str]:
+        """
+        Return some iterable (list is preferred) of possible package names
+        """
+        return {name}
 
     @classmethod
     def get_package_versions(cls, package_name: str) -> Set[Version]:
         versions = set()
+        versions_raw = None
 
-        versions_raw = cls._fetch_package_versions(package_name)
+        for name in cls._possible_names(package_name):
+            versions_raw = cls._fetch_package_versions(name)
+            if versions_raw is not None:
+                break
+
         if versions_raw is None:
             return None
 
