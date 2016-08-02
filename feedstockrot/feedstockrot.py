@@ -6,7 +6,7 @@ from .package import Package
 
 class FeedstockRot:
     def __init__(self, packages: Iterable[str]=None):
-        self.packages = set()  # type: Iterable[Package]
+        self.packages = set()  # type: Set[Package]
 
         if packages is not None:
             self.add(packages)

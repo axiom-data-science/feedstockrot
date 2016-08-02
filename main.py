@@ -53,6 +53,10 @@ def main():
     upgradeable = []  # type: List[Package]
     not_found = []  # type: List[Package]
 
+    if len(rot.packages) < 1:
+        print("No packages")
+        return
+
     for pkg in rot.packages:
         if not pkg.latest_feedstock_version:
             not_found.append(pkg)
