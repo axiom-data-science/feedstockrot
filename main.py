@@ -51,9 +51,12 @@ def main():
 
     unknown = []  # type: List[Package]
     upgradeable = []  # type: List[Package]
+    not_found = []  # type: List[Package]
 
     for pkg in rot.packages:
-        if pkg.latest_external_upgradeable_version:
+        if not pkg.latest_feedstock_version:
+            not_found.append(pkg)
+        elif pkg.latest_external_upgradeable_version:
             upgradeable.append(pkg)
         elif not pkg.latest_external_version:
             unknown.append(pkg)
@@ -66,6 +69,10 @@ def main():
         print("Unknown (check these manually):")
         for pkg in unknown:
             print("- {}: {}".format(pkg.name, pkg.latest_feedstock_version))
+    if len(not_found):
+        print("Not found (no feedstock found, check for typos):")
+        for pkg in not_found:
+            print("- {}".format(pkg.name))
 
 if __name__ == '__main__':
     main()
