@@ -5,12 +5,19 @@ from .package import Package
 
 
 class FeedstockRot:
-    def __init__(self, packages: Iterable[str]):
-        self.packages = set(map(lambda v: Package(v), packages))
+    def __init__(self, packages: Iterable[str]=None):
+        self.packages = set()  # type: Iterable[Package]
 
+        if packages is not None:
+            self.add(packages)
 
-class GithubFeedstockRot(FeedstockRot):
-    def __init__(self, repositories: Iterable[Repository]):
-        self._repositories = Condaforge.filter_feedstocks(repositories)
-        self._repositories = Condaforge.filter_owner(self._repositories)
-        super().__init__(Condaforge.extract_feedstock_names(self._repositories))
+    def add(self, packages: Iterable[str]):
+        self.packages |= set(map(lambda v: Package(v), packages))
+
+    def _add_repositories(self, repositories: Iterable[Repository]):
+        self.add(Condaforge.extract_feedstock_names(repositories))
+
+    def add_repositories(self, repositories: Iterable[Repository]):
+        repositories = Condaforge.filter_feedstocks(repositories)
+        repositories = Condaforge.filter_owner(repositories)
+        self._add_repositories(repositories)
