@@ -23,9 +23,7 @@ class Package:
     def versions_pypi(self):
         if not self._fetched_pypi:
             versions = Pypi.get_package_versions(self.name)
-            # TODO:
-            # - better error handling here
-
+            # TODO: better error handling here
             if versions is not None:
                 self._versions_pypi = versions
             self._fetched_pypi = True
@@ -44,7 +42,7 @@ class Package:
         versions = filter(lambda v: v > self.latest_feedstock_version, versions)
 
         # Only early versions if we're already on one:
-        if not self.latest_feedstock_version.is_prerelease:
+        if not self.latest_feedstock_version or not self.latest_feedstock_version.is_prerelease:
             versions = filter(lambda v: not v.is_prerelease, versions)
 
         return versions
