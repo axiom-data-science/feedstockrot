@@ -65,14 +65,14 @@ def main():
         elif not pkg.latest_external_version:
             unknown.append(pkg)
 
-    if len(upgradeable):
-        print("Upgradeable:")
-        for pkg in upgradeable:
-            print("- {}: {} -> {}".format(pkg.name, pkg.latest_feedstock_version, pkg.latest_external_upgradeable_version))
     if len(unknown):
         print("Unknown (check these manually):")
         for pkg in unknown:
             print("- {}: {}".format(pkg.name, pkg.latest_feedstock_version))
+    if len(upgradeable):
+        print("Upgradeable:")
+        for pkg in upgradeable:
+            print("- {}: {} -> {}".format(pkg.name, pkg.latest_feedstock_version, pkg.latest_external_upgradeable_version))
     if len(not_found):
         print("Not found (no feedstock found, check for typos):")
         for pkg in not_found:
