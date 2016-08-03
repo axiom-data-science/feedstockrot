@@ -1,6 +1,5 @@
 from github.Repository import Repository
 from typing import Set, Iterable
-from .package_sources.condaforge import Condaforge
 from .package import Package
 
 
@@ -15,9 +14,14 @@ class FeedstockRot:
         self.packages |= set(map(lambda v: Package(v), packages))
 
     def _add_repositories(self, repositories: Iterable[Repository]):
-        self.add(Condaforge.extract_feedstock_names(repositories))
+        self.add(map(lambda repo: repo.name, repositories))
 
     def add_repositories(self, repositories: Iterable[Repository]):
-        repositories = Condaforge.filter_feedstocks(repositories)
-        repositories = Condaforge.filter_owner(repositories)
+        # TODO: maybe factor out these literals:
+        repositories = filter(
+            lambda repo:
+                repo.owner.name == 'conda-forge' and
+                repo.name.endswith('-feedstock'),
+            repositories
+        )
         self._add_repositories(repositories)

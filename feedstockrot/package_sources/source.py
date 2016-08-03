@@ -6,8 +6,25 @@ import logging
 
 class Source(metaclass=abc.ABCMeta):
 
-    @abc.abstractclassmethod
-    def _fetch_package_versions(cls, name: str) -> Set[str]:
+    def __init__(self, name: str):
+        # TODO: should Package be passed here instead?
+        self.name = name
+
+        self.source_name = None
+        self._data_versions = None
+        self._versions = None
+
+        # Find source-specific name:
+        for name in self._possible_names(self.name):
+            data = self._fetch_versions(name)
+            if data is not None:
+                self._data_versions = data
+                self.source_name = name
+                break
+
+    @classmethod
+    @abc.abstractmethod
+    def _fetch_versions(cls, name: str) -> Set[str]:
         pass
 
     @classmethod
@@ -17,24 +34,21 @@ class Source(metaclass=abc.ABCMeta):
         """
         return {name}
 
-    @classmethod
-    def get_package_versions(cls, package_name: str) -> Set[Version]:
-        versions = set()
-        versions_raw = None
-
-        for name in cls._possible_names(package_name):
-            versions_raw = cls._fetch_package_versions(name)
-            if versions_raw is not None:
-                break
-
-        if versions_raw is None:
+    @property
+    def versions(self) -> Set[Version]:
+        if self._versions is not None:
+            return self._versions
+        if self._data_versions is None:
             return None
 
-        for version_str in versions_raw:
+        versions = set()
+        for version_str in self._data_versions:
             try:
                 version = Version(version_str)
             except InvalidVersion:
-                logging.info("Got invalid version for {}: {}".format(package_name, version_str))
+                logging.info("Got invalid version for {}: {}".format(self.name, version_str))
                 continue
             versions.add(version)
-        return versions
+
+        self._versions = versions
+        return self._versions

@@ -1,5 +1,6 @@
 from .package_sources.condaforge import Condaforge
 from .package_sources.pypi import Pypi
+import itertools
 
 
 def value_or_empty_set(value):
@@ -9,28 +10,28 @@ def value_or_empty_set(value):
 
 
 class Package:
+
+    # not including condaforge:
+    _SOURCE_CLASSES = [Pypi]
+
     def __init__(self, name):
         self.name = name
 
-        self._source_condaforge = (False, set())
-        self._source_pypi = (False, set())
+        self._source_condaforge = Condaforge(self.name)
+        self._sources_external = {}
+        for source_cls in self._SOURCE_CLASSES:
+            self._sources_external[source_cls] = source_cls(self.name)
 
     @property
     def versions_condaforge(self):
-        if not self._source_condaforge[0]:
-            self._source_condaforge = (True, Condaforge.get_package_versions(self.name))
-        return value_or_empty_set(self._source_condaforge[1])
-
-    @property
-    def versions_pypi(self):
-        if not self._source_pypi[0]:
-            self._source_pypi = (True, Pypi.get_package_versions(self.name))
-        return value_or_empty_set(self._source_pypi[1])
+        return self._source_condaforge.versions
 
     @property
     def _external_versions(self):
-        # for future expansion
-        return self.versions_pypi
+        return itertools.chain.from_iterable(
+            value_or_empty_set(source.versions)
+            for source in self._sources_external.values()
+        )
 
     @property
     def _external_upgradeable_versions(self):
