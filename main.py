@@ -56,6 +56,7 @@ def main() -> int:
 
         rot.add_repositories(gh.get_user().get_repos())
 
+    up_to_date = []  # type: List[Package]
     unknown = []  # type: List[Package]
     upgradeable = []  # type: List[Package]
     not_found = []  # type: List[Package]
@@ -71,7 +72,13 @@ def main() -> int:
             upgradeable.append(pkg)
         elif not pkg.latest_external_version:
             unknown.append(pkg)
+        else:
+            up_to_date.append(pkg)
 
+    if len(up_to_date):
+        print("Up-to-date:")
+        for pkg in up_to_date:
+            print("- {}".format(pkg.name))
     if len(unknown):
         print("Unknown (check these manually):")
         for pkg in unknown:
@@ -79,7 +86,9 @@ def main() -> int:
     if len(upgradeable):
         print("Upgradeable:")
         for pkg in upgradeable:
-            print("- {}: {} -> {}".format(pkg.name, pkg.latest_feedstock_version, pkg.latest_external_upgradeable_version))
+            # TODO: print out source name if different
+            print("- {}: {} -> {}".format(
+                pkg.name, pkg.latest_feedstock_version, pkg.latest_external_upgradeable_version))
     if len(not_found):
         print("Not found (no feedstock found, check for typos):")
         for pkg in not_found:
