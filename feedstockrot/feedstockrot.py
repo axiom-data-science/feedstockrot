@@ -1,5 +1,5 @@
 from github.Repository import Repository
-from typing import List, Iterable
+from typing import Set, Iterable
 from .package_sources.condaforge import Condaforge
 from .package import Package
 

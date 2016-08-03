@@ -1,4 +1,5 @@
-import github
+from github import Github
+from github.GithubException import BadCredentialsException as GithubBadCredentialsException
 from feedstockrot.feedstockrot import FeedstockRot
 import argparse
 import os
@@ -7,7 +8,7 @@ from typing import List
 from feedstockrot.package import Package
 
 
-def main():
+def main() -> int:
 
     parser = argparse.ArgumentParser(
         description='Check for outdated conda-forge packages'
@@ -33,7 +34,7 @@ def main():
 
     if not args.github and len(args.packages) < 1:
         # well, nothing to do here.
-        return
+        return 0
 
     rot = FeedstockRot()
 
@@ -43,10 +44,16 @@ def main():
         token = os.getenv('FEEDSTOCKROT_GITHUB_TOKEN', None)
         if not token:
             logging.error('No Github token found')
-            return
+            return 1
 
-        gh = github.Github(token)
-        # TODO: check if login success
+        gh = Github(token)
+
+        try:
+            gh.get_user().name
+        except GithubBadCredentialsException:
+            logging.error('Authentication to Github failed')
+            return 1
+
         rot.add_repositories(gh.get_user().get_repos())
 
     unknown = []  # type: List[Package]
@@ -55,7 +62,7 @@ def main():
 
     if len(rot.packages) < 1:
         print("No packages")
-        return
+        return 0
 
     for pkg in rot.packages:
         if not pkg.latest_feedstock_version:
@@ -78,5 +85,8 @@ def main():
         for pkg in not_found:
             print("- {}".format(pkg.name))
 
+    return 0
+
 if __name__ == '__main__':
-    main()
+    import sys
+    sys.exit(main())
