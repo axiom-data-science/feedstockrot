@@ -1,5 +1,6 @@
 from .package_sources.condaforge import Condaforge
 from .package_sources.pypi import Pypi
+from .package_sources.source import PackageInfo
 import itertools
 
 
@@ -9,7 +10,7 @@ def value_or_empty_set(value):
     return value
 
 
-class Package:
+class Package(PackageInfo):
 
     # not including condaforge:
     _SOURCE_CLASSES = [Pypi]
@@ -17,10 +18,10 @@ class Package:
     def __init__(self, name):
         self.name = name
 
-        self._source_condaforge = Condaforge(self.name)
+        self._source_condaforge = Condaforge(self)
         self._sources_external = {}
         for source_cls in self._SOURCE_CLASSES:
-            self._sources_external[source_cls] = source_cls(self.name)
+            self._sources_external[source_cls] = source_cls(self)
 
     @property
     def versions_condaforge(self):
@@ -63,3 +64,9 @@ class Package:
             self.name, self.latest_feedstock_version,
             self.latest_external_version, self.latest_external_upgradeable_version
         )
+
+    def get_name(self):
+        return self.name
+
+    def get_urls(self):
+        return []

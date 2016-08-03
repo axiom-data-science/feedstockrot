@@ -4,18 +4,29 @@ from packaging.version import Version, InvalidVersion
 import logging
 
 
+class PackageInfo(metaclass=abc.ABCMeta):
+
+    @abc.abstractmethod
+    def get_name(self) -> str:
+        pass
+
+    @abc.abstractmethod
+    def get_urls(self) -> Iterable[str]:
+        pass
+
+
 class Source(metaclass=abc.ABCMeta):
 
-    def __init__(self, name: str):
+    def __init__(self, package: PackageInfo):
         # TODO: should Package be passed here instead?
-        self.name = name
+        self.package = package
 
         self.source_name = None
         self._data_versions = None
         self._versions = None
 
         # Find source-specific name:
-        for name in self._possible_names(self.name):
+        for name in self._possible_names(self.package.get_name()):
             data = self._fetch_versions(name)
             if data is not None:
                 self._data_versions = data
@@ -46,7 +57,7 @@ class Source(metaclass=abc.ABCMeta):
             try:
                 version = Version(version_str)
             except InvalidVersion:
-                logging.info("Got invalid version for {}: {}".format(self.name, version_str))
+                logging.info("Got invalid version for {}: {}".format(self.package.get_name(), version_str))
                 continue
             versions.add(version)
 
