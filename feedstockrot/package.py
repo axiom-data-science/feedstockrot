@@ -2,32 +2,30 @@ from .package_sources.condaforge import Condaforge
 from .package_sources.pypi import Pypi
 
 
+def value_or_empty_set(value):
+    if value is None:
+        return set()
+    return value
+
+
 class Package:
     def __init__(self, name):
         self.name = name
 
-        self._versions_condaforge = set()
-        self._fetched_condaforge = False
-        self._versions_pypi = set()
-        self._fetched_pypi = False
-        # add github later
+        self._source_condaforge = (False, set())
+        self._source_pypi = (False, set())
 
     @property
     def versions_condaforge(self):
-        if not self._fetched_condaforge:
-            self._versions_condaforge = Condaforge.get_package_versions(self.name)
-            self._fetched_condaforge = True
-        return self._versions_condaforge
+        if not self._source_condaforge[0]:
+            self._source_condaforge = (True, Condaforge.get_package_versions(self.name))
+        return value_or_empty_set(self._source_condaforge[1])
 
     @property
     def versions_pypi(self):
-        if not self._fetched_pypi:
-            versions = Pypi.get_package_versions(self.name)
-            # TODO: better error handling here
-            if versions is not None:
-                self._versions_pypi = versions
-            self._fetched_pypi = True
-        return self._versions_pypi
+        if not self._source_pypi[0]:
+            self._source_pypi = (True, Pypi.get_package_versions(self.name))
+        return value_or_empty_set(self._source_pypi[1])
 
     @property
     def _external_versions(self):
