@@ -13,6 +13,7 @@ class Condaforge(Source):
 
     _repodata = None
 
+    @classmethod
     def _possible_names(cls, name: str):
         names = [name]
         if name.endswith('-feedstock'):
