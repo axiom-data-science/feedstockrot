@@ -69,4 +69,4 @@ class Package(PackageInfo):
         return self.name
 
     def get_urls(self):
-        return []
+        return self._source_condaforge.get_recipe_urls()

@@ -47,7 +47,7 @@ class Condaforge(Source):
         return versions
 
     def _get_recipe(self) -> Dict:
-        resp = requests.get(self._DEFAULT_RECIPE_URL.format(self.name))
+        resp = requests.get(self._DEFAULT_RECIPE_URL.format(self.source_name))
         if resp.status_code != 200:
             return None
         return yaml.load(resp.text)
