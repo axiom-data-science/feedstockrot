@@ -2,31 +2,16 @@ from unittest import TestCase
 from feedstockrot.package_sources.condaforge import Condaforge
 from feedstockrot.package import Package
 from packaging.version import Version
+from ..helpers.setup import condaforge_repodata_up, condaforge_repodata_down
 
 
 class TestCondaforge(TestCase):
 
     def setUp(self):
-        Condaforge._repodata = {
-            "packages": {
-                "package_a-1.0": {
-                    "name": "package_a",
-                    "version": "1.0"
-                },
-                "package_a-1.2": {
-                    "name": "package_a",
-                    "version": "1.2"
-                },
-                "package_a-2.0": {
-                    "name": "package_a",
-                    "version": "2.0"
-                },
-                "package_b-1.0": {
-                    "name": "package_b",
-                    "version": "1.0"
-                }
-            }
-        }
+        condaforge_repodata_up()
+
+    def tearDown(self):
+        condaforge_repodata_down()
 
     def test_possible_names(self):
         self.assertListEqual(
