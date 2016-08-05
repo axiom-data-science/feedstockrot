@@ -28,7 +28,7 @@ class Pypi(Source):
         return names
 
     @classmethod
-    def __fetch(cls, name) -> Dict:
+    def _fetch(cls, name) -> Dict:
         resp = requests.get(cls.DEFAULT_PACKAGE_URL.format(name))
         if resp.status_code != 200:
             return None
@@ -36,7 +36,7 @@ class Pypi(Source):
 
     @classmethod
     def _fetch_versions(cls, name: str) -> Set[str]:
-        resp = cls.__fetch(name)
+        resp = cls._fetch(name)
         if resp is None:
             return None
         return resp['releases'].keys()
