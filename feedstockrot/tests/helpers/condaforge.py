@@ -23,10 +23,10 @@ mock_repodata = {
 _old_repodata = None
 
 
-def condaforge_repodata_up():
+def repodata_up():
     global _old_repodata
     _old_repodata = Condaforge._repodata
     Condaforge._repodata = mock_repodata
 
-def condaforge_repodata_down():
+def repodata_down():
     Condaforge._repodata = _old_repodata

@@ -2,17 +2,17 @@ from unittest import TestCase
 from feedstockrot.feedstockrot import FeedstockRot
 from feedstockrot.package import Package
 from github.Repository import Repository
-from .helpers.setup import condaforge_repodata_up, condaforge_repodata_down
+from .helpers.condaforge import repodata_up, repodata_down
 
 
 class TestFeedstockrot(TestCase):
 
     def setUp(self):
-        condaforge_repodata_up()
+        repodata_up()
         self.rot = FeedstockRot()
 
     def tearDown(self):
-        condaforge_repodata_down()
+        repodata_down()
 
     def test_add(self):
         packages = {'package_a', 'package_b'}

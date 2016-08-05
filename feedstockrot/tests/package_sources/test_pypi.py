@@ -2,7 +2,7 @@ from unittest import TestCase
 from feedstockrot.package_sources.pypi import Pypi
 import responses
 from feedstockrot.package import Package
-from ..helpers.setup import mock_repodata
+from ..helpers.condaforge import mock_repodata
 
 
 class TestPypi(TestCase):
@@ -34,7 +34,7 @@ class TestPypi(TestCase):
 
             result = Pypi._fetch_versions('package_a')
 
-            self.assertIsNotNone(result)
+        self.assertIsNotNone(result)
 
     def test_versions(self):
         pkg = Package('package_a')
@@ -50,4 +50,4 @@ class TestPypi(TestCase):
             src = Pypi(pkg)
             result = src.versions
 
-            self.assertIsNotNone(result)
+        self.assertIsNotNone(result)

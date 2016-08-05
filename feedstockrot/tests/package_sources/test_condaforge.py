@@ -2,16 +2,17 @@ from unittest import TestCase
 from feedstockrot.package_sources.condaforge import Condaforge
 from feedstockrot.package import Package
 from packaging.version import Version
-from ..helpers.setup import condaforge_repodata_up, condaforge_repodata_down
+from ..helpers.condaforge import mock_repodata, repodata_up, repodata_down
+import responses
 
 
 class TestCondaforge(TestCase):
 
     def setUp(self):
-        condaforge_repodata_up()
+        self._old_repodata = Condaforge._repodata
 
     def tearDown(self):
-        condaforge_repodata_down()
+        Condaforge._repodata = self._old_repodata
 
     def test_possible_names(self):
         self.assertListEqual(
@@ -20,10 +21,21 @@ class TestCondaforge(TestCase):
         )
 
     def test_get_repodata(self):
-        # TODO: maybe test further by mocking the http request
-        self.assertEquals(Condaforge._repodata, Condaforge._get_repodata())
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                rsps.GET,
+                Condaforge._DEFAULT_REPODATA_URL.format(Condaforge._DEFAULT_OWNER, Condaforge._DEFAULT_PLATFORM),
+                json=mock_repodata
+            )
+
+            result = Condaforge._get_repodata()
+
+        self.assertEqual(result, mock_repodata)
+        self.assertEquals(Condaforge._repodata, mock_repodata)
 
     def test_fetch_versions(self):
+        repodata_up()
+
         result_a = Condaforge._fetch_versions("package_a")
         expected_a = {'1.0', '1.2', '2.0'}
         self.assertSetEqual(result_a, expected_a)
@@ -31,7 +43,11 @@ class TestCondaforge(TestCase):
         result_b = Condaforge._fetch_versions("package_b")
         self.assertSetEqual(result_b, {'1.0'})
 
+        repodata_down()
+
     def test_versions(self):
+        repodata_up()
+
         src_a = Condaforge(Package('package_a'))
         src_b = Condaforge(Package('package_b'))
 
@@ -43,5 +59,7 @@ class TestCondaforge(TestCase):
             {Version('1.0')},
             src_b.versions
         )
+
+        repodata_down()
 
     # TODO: test recipe methods
