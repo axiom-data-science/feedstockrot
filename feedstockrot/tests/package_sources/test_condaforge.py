@@ -1,34 +1,19 @@
 from unittest import TestCase
-from github.Repository import Repository
 from feedstockrot.package_sources.condaforge import Condaforge
 
 
 class TestCondaforge(TestCase):
-    def setUp(self):
-        self.repo = Repository(None, None, {}, True)
 
-    def test_extract_feedstock_names(self):
-        repos = [
-            Repository(None, None, {"name": "example-feedstock"}, True),
-        ]
-        result = list(Condaforge.extract_feedstock_names(repos))
-        self.assertListEqual(result, ["example"])
+    def test_possible_names(self):
+        self.assertListEqual(
+            ['testing-feedstock', 'testing'],
+            list(Condaforge._possible_names('testing-feedstock'))
+        )
 
-    def test_filter_feedstocks(self):
-        repos = [
-            Repository(None, None, {"name": "example-feedstock"}, True),
-            Repository(None, None, {"name": "examplenotvalid"}, True),
-        ]
-        result = list(Condaforge.filter_feedstocks(repos))
-        self.assertListEqual(result, [repos[0]])
-
-    def test_filter_owner(self):
-        repos = [
-            Repository(None, None, {"name": "example-feedstock", "owner": {"name": "johnsmith"}}, True),
-            Repository(None, None, {"name": "examplenotvalid", "owner": {"name": "conda-forge"}}, True),
-        ]
-        result = list(Condaforge.filter_owner(repos))
-        self.assertListEqual(result, [repos[1]])
+    def test_get_repodata(self):
+        # TODO: maybe test further by mocking the http request
+        Condaforge._repodata = {"packages": {"file": {"name": "test", "version": "1.0"}}}
+        self.assertEquals(Condaforge._repodata, Condaforge._get_repodata())
 
     def test_find_package_versions(self):
         Condaforge._repodata = {
@@ -52,9 +37,11 @@ class TestCondaforge(TestCase):
             }
         }
 
-        result_a = Condaforge._fetch_package_versions("package_a")
+        result_a = Condaforge._fetch_versions("package_a")
         expected_a = {'1.0', '1.2', '2.0'}
         self.assertSetEqual(result_a, expected_a)
 
-        result_b = Condaforge._fetch_package_versions("package_b")
+        result_b = Condaforge._fetch_versions("package_b")
         self.assertSetEqual(result_b, {'1.0'})
+
+    # TODO: test recipe methods
