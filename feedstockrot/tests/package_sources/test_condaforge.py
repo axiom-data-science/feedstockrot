@@ -15,7 +15,7 @@ class TestCondaforge(TestCase):
         Condaforge._repodata = {"packages": {"file": {"name": "test", "version": "1.0"}}}
         self.assertEquals(Condaforge._repodata, Condaforge._get_repodata())
 
-    def test_find_package_versions(self):
+    def test_fetch_versions(self):
         Condaforge._repodata = {
             "packages": {
                 "package_a-1.0": {
