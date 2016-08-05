@@ -18,7 +18,6 @@ class PackageInfo(metaclass=abc.ABCMeta):
 class Source(metaclass=abc.ABCMeta):
 
     def __init__(self, package: PackageInfo):
-        # TODO: should Package be passed here instead?
         self.package = package
 
         self.source_name = None
