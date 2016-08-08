@@ -3,6 +3,7 @@ from feedstockrot.package_sources.pypi import Pypi
 import responses
 from feedstockrot.package import Package
 from ..helpers.condaforge import mock_repodata
+from ..helpers.pypi import mock_pypi
 
 
 class TestPypi(TestCase):
@@ -24,29 +25,15 @@ class TestPypi(TestCase):
     def test_fetch_versions(self):
         pkg_name = 'package_a'
 
-        with responses.RequestsMock() as rsps:
-            response_json = {"releases": {
-                package['version']: {}
-                for package_key, package in mock_repodata['packages'].items()
-                if package['name'] == pkg_name
-            }}
-            rsps.add(rsps.GET, Pypi.DEFAULT_PACKAGE_URL.format(pkg_name), json=response_json)
-
-            result = Pypi._fetch_versions('package_a')
+        with mock_pypi(pkg_name):
+            result = Pypi._fetch_versions(pkg_name)
 
         self.assertIsNotNone(result)
 
     def test_versions(self):
         pkg = Package('package_a')
 
-        with responses.RequestsMock() as rsps:
-            response_json = {"releases": {
-                package['version']: {}
-                for package_key, package in mock_repodata['packages'].items()
-                if package['name'] == pkg.name
-            }}
-            rsps.add(rsps.GET, Pypi.DEFAULT_PACKAGE_URL.format(pkg.name), json=response_json)
-
+        with mock_pypi(pkg.name):
             src = Pypi(pkg)
             result = src.versions
 
