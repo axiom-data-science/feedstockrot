@@ -1,4 +1,13 @@
-Usage:
+### Installation
+
+Setup a conda environment and install dependencies:
+
+```bash
+conda create -n feedstockrot --file requirements.txt
+source activate feedstockrot
+```
+
+### Usage:
 
 To start, just execute and specify which packages to check:
 
