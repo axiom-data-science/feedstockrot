@@ -1,5 +1,5 @@
 from .source import Source
-from typing import Set, Iterable, Dict
+from typing import Set, List, Dict
 import requests
 import yaml
 
@@ -52,7 +52,7 @@ class Condaforge(Source):
             return None
         return yaml.load(resp.text)
 
-    def get_recipe_urls(self) -> Iterable[str]:
+    def get_recipe_urls(self) -> List[str]:
         """
         Get URLs for a feedstock that may be useful for discerning project info/versions from other sources
         """

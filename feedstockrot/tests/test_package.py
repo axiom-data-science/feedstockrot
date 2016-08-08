@@ -3,7 +3,7 @@ from feedstockrot.package import Package, value_or_empty_set
 from packaging.version import Version
 from .helpers.mock.mock import Mocker
 from .helpers.mock.pypi import PypiMock
-from .helpers.mock.anaconda import AnacondaMock
+from .helpers.mock.condaforge import CondaforgeRepoMock
 
 
 class TestPackage(TestCase):
@@ -15,9 +15,9 @@ class TestPackage(TestCase):
         self.assertEqual(['test'], value_or_empty_set(['test']))
 
     def setUp(self):
-        with Mocker(PypiMock('package_a'), AnacondaMock('package_a')):
+        with Mocker(PypiMock('package_a'), CondaforgeRepoMock('package_a')):
             self.pkg_a = Package('package_a')
-        with Mocker(PypiMock().expected_missing(1), AnacondaMock()):
+        with Mocker(PypiMock().expected_missing(1), CondaforgeRepoMock()):
             self.pkg_bad = Package('not-a-real-package')
 
     def test_versions_condaforge(self):
