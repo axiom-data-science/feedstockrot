@@ -52,6 +52,14 @@ class TestCondaforge(TestCase):
             src_b.versions
         )
 
+        with Mocker(CondaforgeRepoMock('package_z'), PypiMock('package_z')):
+            src_z = Condaforge(Package('package_z'))
+
+        self.assertSetEqual(
+            {Version('0.1')},
+            src_z.versions
+        )
+
     def test__get_recipe_a(self):
         with Mocker(CondaforgeRepoMock('package_a'), PypiMock('package_a')):
             src_a = Condaforge(Package('package_a'))

@@ -19,6 +19,14 @@ mock_package_list = [
         "name": "package_b",
         "version": "1.0",
         "home_url": "https://example.com/package_b/"
+    },
+    {
+        "name": "package_z",
+        "version": "1.invalid"
+    },
+    {
+        "name": "package_z",
+        "version": "0.1"
     }
 ]
 

@@ -1,6 +1,7 @@
 from unittest import TestCase
 from feedstockrot.package_sources.pypi import Pypi
 from feedstockrot.package import Package
+from packaging.version import Version
 from ..helpers.mock.mock import Mocker
 from ..helpers.mock.pypi import PypiMock
 
@@ -31,9 +32,15 @@ class TestPypi(TestCase):
 
     def test_versions(self):
         pkg = Package('package_a')
-
         with Mocker(PypiMock(pkg.name)):
             src = Pypi(pkg)
             result = src.versions
 
-        self.assertIsNotNone(result)
+        self.assertSetEqual({Version('1.0'), Version('1.2'), Version('2.0')}, result)
+
+        pkg = Package('package_z')
+        with Mocker(PypiMock(pkg.name)):
+            src = Pypi(pkg)
+            result = src.versions
+
+        self.assertSetEqual({Version('0.1')}, result)
