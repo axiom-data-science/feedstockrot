@@ -2,21 +2,20 @@ from unittest import TestCase
 from feedstockrot.feedstockrot import FeedstockRot
 from feedstockrot.package import Package
 from github.Repository import Repository
-from .helpers.condaforge import repodata_up, repodata_down
+from .helpers.mock.mock import Mocker
+from .helpers.mock.anaconda import AnacondaMock
+from .helpers.mock.pypi import PypiMock
 
 
 class TestFeedstockrot(TestCase):
 
     def setUp(self):
-        repodata_up()
         self.rot = FeedstockRot()
-
-    def tearDown(self):
-        repodata_down()
 
     def test_add(self):
         packages = {'package_a', 'package_b'}
-        self.rot.add(packages)
+        with Mocker(AnacondaMock(*packages), PypiMock(*packages)):
+            self.rot.add(packages)
 
         self.assertEqual(len(packages), len(self.rot.packages))
         rot_packages = self.rot.packages.copy()
@@ -43,7 +42,9 @@ class TestFeedstockrot(TestCase):
         ]
 
         repositories = repositories_good + repositories_bad_owner + repositories_bad_name + repositories_bad_name_owner
-        self.rot.add_repositories(repositories)
+        package_names = {'package_a', 'package_b', 'package_c', 'package_d', 'package_e'}
+        with Mocker(AnacondaMock(*package_names), PypiMock().expected_missing(2)):
+            self.rot.add_repositories(repositories)
         rot_packages = self.rot.packages.copy()
 
         self.assertEqual(len(repositories_good), len(rot_packages))
