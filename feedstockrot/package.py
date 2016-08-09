@@ -25,7 +25,7 @@ class Package(PackageInfo):
 
     @property
     def versions_condaforge(self):
-        return self._source_condaforge.versions
+        return value_or_empty_set(self._source_condaforge.versions)
 
     @property
     def _external_versions(self):
@@ -66,6 +66,9 @@ class Package(PackageInfo):
         )
 
     def get_name(self):
+        # check required for when we actually call Condaforge(self) before it is set
+        if hasattr(self, '_source_condaforge') and self._source_condaforge.name is not None:
+            return self._source_condaforge.name
         return self.name
 
     def get_urls(self):

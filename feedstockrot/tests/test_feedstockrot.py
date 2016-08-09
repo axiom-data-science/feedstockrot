@@ -5,6 +5,7 @@ from github.Repository import Repository
 from .helpers.mock.mock import Mocker
 from .helpers.mock.condaforge import CondaforgeRepoMock
 from .helpers.mock.pypi import PypiMock
+from packaging.version import Version
 
 
 class TestFeedstockrot(TestCase):
@@ -48,3 +49,16 @@ class TestFeedstockrot(TestCase):
         rot_packages = self.rot.packages.copy()
 
         self.assertEqual(len(repositories_good), len(rot_packages))
+
+        # TODO check versions for a,b
+        for pkg in rot_packages:  # type: Package
+            if pkg.get_name() == 'package_a':
+                self.assertEqual(Version('2.0'), pkg.latest_feedstock_version)
+                self.assertIsNone(pkg.latest_external_version) # we're responding with a 404 to pypi
+                self.assertIsNone(pkg.latest_external_upgradeable_version)
+            elif pkg.get_name() == 'package_b':
+                self.assertEqual(Version('1.0'), pkg.latest_feedstock_version)
+                self.assertIsNone(pkg.latest_external_version) # we're responding with a 404 to pypi
+                self.assertIsNone(pkg.latest_external_upgradeable_version)
+            else:
+                self.assertIsNone(pkg.get_name())

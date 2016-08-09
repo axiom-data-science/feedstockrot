@@ -44,10 +44,10 @@ class Condaforge(Source):
         for package_name, package in cls._get_repodata()['packages'].items():
             if package['name'] == name:
                 versions.add(package['version'])
-        return versions
+        return versions if len(versions) > 0 else None
 
     def _get_recipe(self) -> Dict:
-        resp = requests.get(self._DEFAULT_RECIPE_URL.format(self.source_name))
+        resp = requests.get(self._DEFAULT_RECIPE_URL.format(self.name))
         if resp.status_code != 200:
             return None
         return yaml.load(resp.text)

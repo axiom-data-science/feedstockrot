@@ -20,7 +20,7 @@ class Source(metaclass=abc.ABCMeta):
     def __init__(self, package: PackageInfo):
         self.package = package
 
-        self.source_name = None
+        self.name = None
         self._data_versions = None
         self._versions = None
 
@@ -29,7 +29,7 @@ class Source(metaclass=abc.ABCMeta):
             data = self._fetch_versions(name)
             if data is not None:
                 self._data_versions = data
-                self.source_name = name
+                self.name = name
                 break
 
     @classmethod
