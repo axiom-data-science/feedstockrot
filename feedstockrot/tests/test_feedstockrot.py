@@ -50,7 +50,6 @@ class TestFeedstockrot(TestCase):
 
         self.assertEqual(len(repositories_good), len(rot_packages))
 
-        # TODO check versions for a,b
         for pkg in rot_packages:  # type: Package
             if pkg.get_name() == 'package_a':
                 self.assertEqual(Version('2.0'), pkg.latest_feedstock_version)
