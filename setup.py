@@ -12,6 +12,8 @@ setup(
         'Programming Language :: Python',
     ],
     entry_points={
-        # TODO
+        'console_scripts': [
+            'feedstockrot=feedstockrot.command_line:main_run'
+        ]
     }
 )

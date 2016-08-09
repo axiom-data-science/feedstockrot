@@ -7,17 +7,24 @@ conda create -n feedstockrot --file requirements.txt
 source activate feedstockrot
 ```
 
+Then install this tool:
+
+```bash
+cd /path/to/feedstockrot
+pip install .
+```
+
 ### Usage:
 
 To start, just execute and specify which packages to check:
 
 ```
-python main.py cherrypy matplotlib flake8 netcdf4 redis-py
+feedstockrot cherrypy matplotlib flake8 netcdf4 redis-py
 ```
 
 To check all of *your* feedstocks, export a GitHub token and run:
 
 ```
 export FEEDSTOCKROT_GITHUB_TOKEN=your-github-token
-python main.py --github
+feedstockrot --github
 ```

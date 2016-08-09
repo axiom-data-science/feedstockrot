@@ -1,11 +1,11 @@
 from github import Github
 from github.GithubException import BadCredentialsException as GithubBadCredentialsException
-from feedstockrot.feedstockrot import FeedstockRot
+from .feedstockrot import FeedstockRot
 import argparse
 import os
 import logging
 from typing import List
-from feedstockrot.package import Package
+from .package import Package
 
 
 def main() -> int:
@@ -96,6 +96,11 @@ def main() -> int:
 
     return 0
 
-if __name__ == '__main__':
+
+def main_run():
     import sys
     sys.exit(main())
+
+
+if __name__ == '__main__':
+    main_run()
