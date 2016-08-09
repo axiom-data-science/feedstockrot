@@ -1,5 +1,8 @@
 from github import Github
 from github.GithubException import BadCredentialsException as GithubBadCredentialsException
+from github.PaginatedList import PaginatedList
+from github.AuthenticatedUser import AuthenticatedUser
+from github.Organization import Organization
 from .feedstockrot import FeedstockRot
 import argparse
 import os
@@ -13,6 +16,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description='Check for outdated conda-forge packages'
     )
+    parser.add_argument('--debug', action='store_true', help='Enable debug output')
 
     parser.add_argument(
         '--github',
@@ -32,6 +36,9 @@ def main() -> int:
 
     args = parser.parse_args()
 
+    if args.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
+
     if not args.github and len(args.packages) < 1:
         # well, nothing to do here.
         return 0
@@ -39,6 +46,7 @@ def main() -> int:
     rot = FeedstockRot()
 
     rot.add(args.packages)
+    logging.debug('Added packages from CLI')
 
     if args.github:
         token = os.getenv('FEEDSTOCKROT_GITHUB_TOKEN', None)
@@ -49,12 +57,22 @@ def main() -> int:
         gh = Github(token)
 
         try:
-            gh.get_user().name
+            gh_user = gh.get_user()  # type: AuthenticatedUser
+            logging.debug('Authenticated to GitHub as: {}'.format(gh_user.name))
         except GithubBadCredentialsException:
-            logging.error('Authentication to Github failed')
+            logging.error('Authentication to GitHub failed')
             return 1
+        print("Authenticated to GitHub")
 
-        rot.add_repositories(gh.get_user().get_repos())
+        gh_org = gh.get_organization('conda-forge')  # type: Organization
+        gh_repos = gh_org.get_repos(type="member")  # type: PaginatedList
+        logging.debug('Got GitHub repositories reference')
+
+        gh_repos = filter(lambda repo: repo.permissions.push, gh_repos)
+        logging.debug('Filter repos by push access')
+
+        rot.add_repositories(gh_repos)
+        logging.debug('Added repos as packages')
 
     up_to_date = []  # type: List[Package]
     unknown = []  # type: List[Package]
