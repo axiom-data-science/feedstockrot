@@ -35,14 +35,22 @@ class Condaforge(Source):
         """
         if platform not in cls._repodata:
             url = cls._DEFAULT_REPODATA_URL.format(cls._DEFAULT_OWNER, platform)
-            cls._repodata[platform] = requests.get(url).json()
+            response = requests.get(url)
+            if response.status_code != 200:
+                return None
+
+            cls._repodata[platform] = response.json()
         return cls._repodata[platform]
 
     @classmethod
     def _get_repodata_packages_aggregate(cls) -> List[Dict]:
         packages = []
         for platform in cls._DEFAULT_PLATFORMS:
-            platform_packages = cls._get_repodata(platform)['packages'].values()
+            repodata = cls._get_repodata(platform)
+            if repodata is None:
+                continue
+
+            platform_packages = repodata['packages'].values()
             packages += platform_packages
         return packages
 
