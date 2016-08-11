@@ -4,21 +4,29 @@ from packaging.version import Version
 from .helpers.mock.mock import Mocker
 from .helpers.mock.pypi import PypiMock
 from .helpers.mock.condaforge import CondaforgeRepoMock
+from feedstockrot.package_sources.pypi import Pypi
 
 
 class TestPackage(TestCase):
+
+    def setUp(self):
+        # use a single source here, just to ensure the functionality works
+        self._old_sources = Package._SOURCE_CLASSES
+        Package._SOURCE_CLASSES = [Pypi]
+
+        with Mocker(PypiMock('package_a'), CondaforgeRepoMock('package_a')):
+            self.pkg_a = Package('package_a')
+        with Mocker(PypiMock().expected_missing(1), CondaforgeRepoMock()):
+            self.pkg_bad = Package('not-a-real-package')
+
+    def tearDown(self):
+        Package._SOURCE_CLASSES = self._old_sources
 
     def test_value_or_empty_set(self):
         self.assertSetEqual(set(), value_or_empty_set(None))
         self.assertSetEqual(set(), value_or_empty_set(set()))
         self.assertSetEqual({'test'}, value_or_empty_set({'test'}))
         self.assertEqual(['test'], value_or_empty_set(['test']))
-
-    def setUp(self):
-        with Mocker(PypiMock('package_a'), CondaforgeRepoMock('package_a')):
-            self.pkg_a = Package('package_a')
-        with Mocker(PypiMock().expected_missing(1), CondaforgeRepoMock()):
-            self.pkg_bad = Package('not-a-real-package')
 
     def test_versions_condaforge(self):
         self.assertSetEqual({Version('1.0'), Version('1.2'), Version('2.0')}, self.pkg_a.versions_condaforge)
