@@ -16,9 +16,10 @@ class TestCondaforge(TestCase):
             list(Condaforge._possible_names('testing-feedstock'))
         )
 
+    # TODO: consider testing multi-platform capability
     def test_get_repodata(self):
         with Mocker(CondaforgeRepoMock('package_a')):
-            result = Condaforge._get_repodata()
+            result = Condaforge._get_repodata(Condaforge._DEFAULT_PLATFORMS[0])
 
         self.assertIsNotNone(result)
         self.assertIsInstance(result, dict)

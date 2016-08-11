@@ -8,11 +8,17 @@ import yaml
 class CondaforgeRepoMock(Mock):
 
     def __enter__(self):
+        # Reset the repodata after each test so there is no dependency on it being cached
         self._old_repodata = Condaforge._repodata
-        Condaforge._repodata = None
+        Condaforge._repodata = {}
+
+        # Make things simpler by only dealing with 1 platform for now:
+        self._old_platforms = Condaforge._DEFAULT_PLATFORMS
+        Condaforge._DEFAULT_PLATFORMS = [Condaforge._DEFAULT_PLATFORMS[0]]
 
     def __exit__(self, *exc):
         Condaforge._repodata = self._old_repodata
+        Condaforge._DEFAULT_PLATFORMS = self._old_platforms
 
     def setup(self, rsps: RequestsMock):
         response = {"packages": {
@@ -22,7 +28,7 @@ class CondaforgeRepoMock(Mock):
         }}
         rsps.add(
             rsps.GET,
-            Condaforge._DEFAULT_REPODATA_URL.format(Condaforge._DEFAULT_OWNER, Condaforge._DEFAULT_PLATFORM),
+            Condaforge._DEFAULT_REPODATA_URL.format(Condaforge._DEFAULT_OWNER, Condaforge._DEFAULT_PLATFORMS[0]),
             json=response
         )
 
