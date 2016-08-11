@@ -3,7 +3,7 @@
 Setup a conda environment and install dependencies:
 
 ```bash
-conda create -n feedstockrot --file requirements.txt
+conda create -n feedstockrot --file requirements.txt python=3.5
 source activate feedstockrot
 ```
 
