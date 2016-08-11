@@ -7,11 +7,11 @@ import yaml
 class Condaforge(Source):
 
     _DEFAULT_OWNER = 'conda-forge'
-    _DEFAULT_PLATFORM = 'linux-64'
+    _DEFAULT_PLATFORMS = ['linux-64', 'osx-64', 'win-64']
     _DEFAULT_REPODATA_URL = 'https://conda.anaconda.org/{}/{}/repodata.json'
     _DEFAULT_RECIPE_URL = 'https://raw.githubusercontent.com/conda-forge/{}-feedstock/master/recipe/meta.yaml'
 
-    _repodata = None
+    _repodata = {}
 
     @classmethod
     def _possible_names(cls, name: str):
@@ -21,7 +21,7 @@ class Condaforge(Source):
         return names
 
     @classmethod
-    def _get_repodata(cls):
+    def _get_repodata(cls, platform) -> Dict:
         """
         {
             "packages": {
@@ -33,15 +33,23 @@ class Condaforge(Source):
             }
         }
         """
-        if cls._repodata is None:
-            url = cls._DEFAULT_REPODATA_URL.format(cls._DEFAULT_OWNER, cls._DEFAULT_PLATFORM)
-            cls._repodata = requests.get(url).json()
-        return cls._repodata
+        if platform not in cls._repodata:
+            url = cls._DEFAULT_REPODATA_URL.format(cls._DEFAULT_OWNER, platform)
+            cls._repodata[platform] = requests.get(url).json()
+        return cls._repodata[platform]
+
+    @classmethod
+    def _get_repodata_packages_aggregate(cls) -> List[Dict]:
+        packages = []
+        for platform in cls._DEFAULT_PLATFORMS:
+            platform_packages = cls._get_repodata(platform)['packages'].values()
+            packages += platform_packages
+        return packages
 
     @classmethod
     def _fetch_versions(cls, name: str) -> Set[str]:
         versions = set()
-        for package_name, package in cls._get_repodata()['packages'].items():
+        for package in cls._get_repodata_packages_aggregate():
             if package['name'] == name:
                 versions.add(package['version'])
         return versions if len(versions) > 0 else None
