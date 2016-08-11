@@ -20,7 +20,7 @@ class FeedstockRot:
         # TODO: maybe factor out these literals:
         repositories = filter(
             lambda repo:
-                repo.owner.name == 'conda-forge' and
+                repo.owner.login == 'conda-forge' and
                 repo.name.endswith('-feedstock'),
             repositories
         )

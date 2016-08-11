@@ -64,8 +64,7 @@ def main() -> int:
             return 1
         print("Authenticated to GitHub")
 
-        gh_org = gh.get_organization('conda-forge')  # type: Organization
-        gh_repos = gh_org.get_repos(type="member")  # type: PaginatedList
+        gh_repos = gh_user.get_repos()  # type: PaginatedList
         logging.debug('Got GitHub repositories reference')
 
         gh_repos = filter(lambda repo: repo.permissions.push, gh_repos)
