@@ -2,6 +2,7 @@ from .source import Source, PackageInfo
 from typing import Set, List, Dict
 import requests
 import yaml
+import jinja2
 
 
 class Condaforge(Source):
@@ -67,7 +68,10 @@ class Condaforge(Source):
         resp = requests.get(self._DEFAULT_RECIPE_URL.format(self.name))
         if resp.status_code != 200:
             return None
-        return yaml.load(resp.text)
+        # conda-forge recipes commonly use jinja2 for variables
+        parsed = jinja2.Template(resp.text)
+        rendered = parsed.render()
+        return yaml.load(rendered)
 
     def get_recipe_urls(self) -> List[str]:
         """
