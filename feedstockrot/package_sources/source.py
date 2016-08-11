@@ -25,7 +25,7 @@ class Source(metaclass=abc.ABCMeta):
         self._versions = None
 
         # Find source-specific name:
-        for name in self._possible_names(self.package.get_name()):
+        for name in self._possible_names(self.package):
             data = self._fetch_versions(name)
             if data is not None:
                 self._data_versions = data
@@ -38,11 +38,11 @@ class Source(metaclass=abc.ABCMeta):
         pass
 
     @classmethod
-    def _possible_names(cls, name: str) -> Iterable[str]:
+    def _possible_names(cls, package: PackageInfo) -> Iterable[str]:
         """
         Return some iterable (list is preferred) of possible package names
         """
-        return {name}
+        return {package.get_name()}
 
     @property
     def versions(self) -> Set[Version]:

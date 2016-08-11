@@ -3,3 +3,4 @@ packaging =16.*
 pygithub =1.26.*
 pyyaml =3.*
 responses =0.5.*
+jinja2 =2.8.*

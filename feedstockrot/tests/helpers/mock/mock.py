@@ -21,6 +21,16 @@ mock_package_list = [
         "home_url": "https://example.com/package_b/"
     },
     {
+        "name": "package_g",
+        "version": "1.0",
+        "source_url": "https://github.com/package_g/package_g"
+    },
+    {
+        "name": "package_g",
+        "version": "1.5",
+        "source_url": "https://github.com/package_g/package_g"
+    },
+    {
         "name": "package_z",
         "version": "1.invalid"
     },

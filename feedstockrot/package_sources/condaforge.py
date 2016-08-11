@@ -1,7 +1,21 @@
-from .source import Source
+from .source import Source, PackageInfo
 from typing import Set, List, Dict
 import requests
 import yaml
+import jinja2
+
+
+# From https://github.com/conda-forge/conda-smithy/blob/master/conda_smithy/lint_recipe.py#L19
+# Allows recipes to be parsed even with undefined jinja2 variables
+class Jinja2NullUndefined(jinja2.Undefined):
+    def __unicode__(self):
+        return str(self._undefined_name)
+
+    def __getattr__(self, name):
+        return str('{}.{}'.format(self, name))
+
+    def __getitem__(self, name):
+        return '{}["{}"]'.format(self, name)
 
 
 class Condaforge(Source):
@@ -14,8 +28,9 @@ class Condaforge(Source):
     _repodata = {}
 
     @classmethod
-    def _possible_names(cls, name: str):
-        names = [name]
+    def _possible_names(cls, package: PackageInfo):
+        name = package.get_name()
+        names = list(super()._possible_names(package))
         if name.endswith('-feedstock'):
             names.append(name[:-len('-feedstock')])
         return names
@@ -66,7 +81,14 @@ class Condaforge(Source):
         resp = requests.get(self._DEFAULT_RECIPE_URL.format(self.name))
         if resp.status_code != 200:
             return None
-        return yaml.load(resp.text)
+
+        # conda-forge recipes commonly use jinja2 for variables
+        try:
+            parsed = jinja2.Template(resp.text, undefined=Jinja2NullUndefined)
+            rendered = parsed.render()
+            return yaml.load(rendered)
+        except (jinja2.TemplateError, yaml.YAMLError):
+            return None
 
     def get_recipe_urls(self) -> List[str]:
         """
@@ -80,7 +102,10 @@ class Condaforge(Source):
 
         if 'about' in recipe and 'home' in recipe['about']:
             urls.append(recipe['about']['home'])
-        if 'source' in recipe and 'url' in recipe['source']:
-            urls.append(recipe['source']['url'])
+        if 'source' in recipe:
+            if 'url' in recipe['source']:
+                urls.append(recipe['source']['url'])
+            if 'git_url' in recipe['source']:
+                urls.append(recipe['source']['git_url'])
 
         return urls

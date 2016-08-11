@@ -5,15 +5,22 @@ from packaging.version import Version
 from ..helpers.mock.mock import Mocker
 from ..helpers.mock.condaforge import CondaforgeRepoMock
 from ..helpers.mock.condaforge import CondaforgeRecipeMock
-from ..helpers.mock.pypi import PypiMock
+from ..helpers.packageinfo import PackageInfoFake
 
 
 class TestCondaforge(TestCase):
 
+    def setUp(self):
+        self._old_sources = Package._SOURCE_CLASSES
+        Package._SOURCE_CLASSES = []
+
+    def tearDown(self):
+        Package._SOURCE_CLASSES = self._old_sources
+
     def test_possible_names(self):
         self.assertListEqual(
             ['testing-feedstock', 'testing'],
-            list(Condaforge._possible_names('testing-feedstock'))
+            list(Condaforge._possible_names(PackageInfoFake('testing-feedstock')))
         )
 
     # TODO: consider testing multi-platform capability
@@ -37,7 +44,7 @@ class TestCondaforge(TestCase):
         self.assertSetEqual(result_b, {'1.0'})
 
     def test_versions(self):
-        with Mocker(CondaforgeRepoMock('package_a'), PypiMock('package_a')):
+        with Mocker(CondaforgeRepoMock('package_a')):
             src_a = Condaforge(Package('package_a'))
 
         self.assertSetEqual(
@@ -45,7 +52,7 @@ class TestCondaforge(TestCase):
             src_a.versions
         )
 
-        with Mocker(CondaforgeRepoMock('package_b'), PypiMock('package_b')):
+        with Mocker(CondaforgeRepoMock('package_b')):
             src_b = Condaforge(Package('package_b'))
 
         self.assertSetEqual(
@@ -53,7 +60,7 @@ class TestCondaforge(TestCase):
             src_b.versions
         )
 
-        with Mocker(CondaforgeRepoMock('package_z'), PypiMock('package_z')):
+        with Mocker(CondaforgeRepoMock('package_z')):
             src_z = Condaforge(Package('package_z'))
 
         self.assertSetEqual(
@@ -62,7 +69,7 @@ class TestCondaforge(TestCase):
         )
 
     def test__get_recipe_a(self):
-        with Mocker(CondaforgeRepoMock('package_a'), PypiMock('package_a')):
+        with Mocker(CondaforgeRepoMock('package_a')):
             src_a = Condaforge(Package('package_a'))
         with Mocker(CondaforgeRecipeMock('package_a')):
             result = src_a._get_recipe()
@@ -70,7 +77,7 @@ class TestCondaforge(TestCase):
         self.assertIn('package', result)
 
     def test__get_recipe_b(self):
-        with Mocker(CondaforgeRepoMock('package_b'), PypiMock('package_b')):
+        with Mocker(CondaforgeRepoMock('package_b')):
             src_a = Condaforge(Package('package_b'))
         with Mocker(CondaforgeRecipeMock('package_b')):
             result = src_a._get_recipe()
@@ -80,14 +87,14 @@ class TestCondaforge(TestCase):
         self.assertIn('home', result['about'])
 
     def test_get_recipe_urls_a(self):
-        with Mocker(CondaforgeRepoMock('package_a'), PypiMock('package_a')):
+        with Mocker(CondaforgeRepoMock('package_a')):
             src_a = Condaforge(Package('package_a'))
         with Mocker(CondaforgeRecipeMock('package_a')):
             result = src_a.get_recipe_urls()
         self.assertEqual(0, len(result))
 
     def test_get_recipe_urls_b(self):
-        with Mocker(CondaforgeRepoMock('package_b'), PypiMock('package_b')):
+        with Mocker(CondaforgeRepoMock('package_b')):
             src_a = Condaforge(Package('package_b'))
         with Mocker(CondaforgeRecipeMock('package_b')):
             result = src_a.get_recipe_urls()

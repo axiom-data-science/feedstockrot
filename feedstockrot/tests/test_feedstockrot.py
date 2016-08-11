@@ -6,12 +6,20 @@ from .helpers.mock.mock import Mocker
 from .helpers.mock.condaforge import CondaforgeRepoMock
 from .helpers.mock.pypi import PypiMock
 from packaging.version import Version
+from feedstockrot.package_sources.pypi import Pypi
 
 
 class TestFeedstockrot(TestCase):
 
     def setUp(self):
+        # use a single source here just to ensure functionality
+        self._old_sources = Package._SOURCE_CLASSES
+        Package._SOURCE_CLASSES = [Pypi]
+
         self.rot = FeedstockRot()
+
+    def tearDown(self):
+        Package._SOURCE_CLASSES = self._old_sources
 
     def test_add(self):
         packages = {'package_a', 'package_b'}

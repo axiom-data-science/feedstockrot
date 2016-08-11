@@ -1,5 +1,6 @@
 from .package_sources.condaforge import Condaforge
 from .package_sources.pypi import Pypi
+from .package_sources.github import Github
 from .package_sources.source import PackageInfo
 import itertools
 
@@ -13,7 +14,7 @@ def value_or_empty_set(value):
 class Package(PackageInfo):
 
     # not including condaforge:
-    _SOURCE_CLASSES = [Pypi]
+    _SOURCE_CLASSES = [Pypi, Github]
 
     def __init__(self, name):
         self.name = name
