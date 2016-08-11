@@ -5,6 +5,19 @@ import yaml
 import jinja2
 
 
+# From https://github.com/conda-forge/conda-smithy/blob/master/conda_smithy/lint_recipe.py#L19
+# Allows recipes to be parsed even with undefined jinja2 variables
+class Jinja2NullUndefined(jinja2.Undefined):
+    def __unicode__(self):
+        return str(self._undefined_name)
+
+    def __getattr__(self, name):
+        return str('{}.{}'.format(self, name))
+
+    def __getitem__(self, name):
+        return '{}["{}"]'.format(self, name)
+
+
 class Condaforge(Source):
 
     _DEFAULT_OWNER = 'conda-forge'
@@ -68,10 +81,14 @@ class Condaforge(Source):
         resp = requests.get(self._DEFAULT_RECIPE_URL.format(self.name))
         if resp.status_code != 200:
             return None
+
         # conda-forge recipes commonly use jinja2 for variables
-        parsed = jinja2.Template(resp.text)
-        rendered = parsed.render()
-        return yaml.load(rendered)
+        try:
+            parsed = jinja2.Template(resp.text, undefined=Jinja2NullUndefined)
+            rendered = parsed.render()
+            return yaml.load(rendered)
+        except (jinja2.TemplateError, yaml.YAMLError):
+            return None
 
     def get_recipe_urls(self) -> List[str]:
         """
