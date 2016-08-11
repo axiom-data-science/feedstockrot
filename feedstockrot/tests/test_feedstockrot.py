@@ -28,18 +28,18 @@ class TestFeedstockrot(TestCase):
 
     def test_add_repositories(self):
         repositories_good = [
-            Repository(None, None, {"name": "package_a-feedstock", "owner": {"name": "conda-forge"}}, True),
-            Repository(None, None, {"name": "package_b-feedstock", "owner": {"name": "conda-forge"}}, True),
+            Repository(None, None, {"name": "package_a-feedstock", "owner": {"login": "conda-forge"}}, True),
+            Repository(None, None, {"name": "package_b-feedstock", "owner": {"login": "conda-forge"}}, True),
         ]
         repositories_bad_owner = [
-            Repository(None, None, {"name": "package_a-feedstock", "owner": {"name": "johnsmith"}}, True),
-            Repository(None, None, {"name": "package_c-feedstock", "owner": {"name": "joesmith"}}, True),
+            Repository(None, None, {"name": "package_a-feedstock", "owner": {"login": "johnsmith"}}, True),
+            Repository(None, None, {"name": "package_c-feedstock", "owner": {"login": "joesmith"}}, True),
         ]
         repositories_bad_name = [
-            Repository(None, None, {"name": "package_d", "owner": {"name": "conda-forge"}}, True),
+            Repository(None, None, {"name": "package_d", "owner": {"login": "conda-forge"}}, True),
         ]
         repositories_bad_name_owner = [
-            Repository(None, None, {"name": "package_e", "owner": {"name": "conda-forge"}}, True),
+            Repository(None, None, {"name": "package_e", "owner": {"login": "conda-forge"}}, True),
         ]
 
         repositories = repositories_good + repositories_bad_owner + repositories_bad_name + repositories_bad_name_owner
