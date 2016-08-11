@@ -6,6 +6,7 @@ from ..helpers.mock.mock import Mocker
 from ..helpers.mock.condaforge import CondaforgeRepoMock
 from ..helpers.mock.condaforge import CondaforgeRecipeMock
 from ..helpers.mock.pypi import PypiMock
+from ..helpers.packageinfo import PackageInfoFake
 
 
 class TestCondaforge(TestCase):
@@ -13,7 +14,7 @@ class TestCondaforge(TestCase):
     def test_possible_names(self):
         self.assertListEqual(
             ['testing-feedstock', 'testing'],
-            list(Condaforge._possible_names('testing-feedstock'))
+            list(Condaforge._possible_names(PackageInfoFake('testing-feedstock')))
         )
 
     # TODO: consider testing multi-platform capability

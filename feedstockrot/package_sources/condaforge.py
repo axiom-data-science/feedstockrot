@@ -1,4 +1,4 @@
-from .source import Source
+from .source import Source, PackageInfo
 from typing import Set, List, Dict
 import requests
 import yaml
@@ -14,8 +14,9 @@ class Condaforge(Source):
     _repodata = {}
 
     @classmethod
-    def _possible_names(cls, name: str):
-        names = [name]
+    def _possible_names(cls, package: PackageInfo):
+        name = package.get_name()
+        names = list(super()._possible_names(package))
         if name.endswith('-feedstock'):
             names.append(name[:-len('-feedstock')])
         return names
@@ -80,7 +81,10 @@ class Condaforge(Source):
 
         if 'about' in recipe and 'home' in recipe['about']:
             urls.append(recipe['about']['home'])
-        if 'source' in recipe and 'url' in recipe['source']:
-            urls.append(recipe['source']['url'])
+        if 'source' in recipe:
+            if 'url' in recipe['source']:
+                urls.append(recipe['source']['url'])
+            if 'git_url' in recipe['source']:
+                urls.append(recipe['source']['git_url'])
 
         return urls

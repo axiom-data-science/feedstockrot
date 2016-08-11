@@ -1,4 +1,4 @@
-from .source import Source
+from .source import Source, PackageInfo
 import requests
 from typing import Dict, Set, List
 import logging
@@ -9,8 +9,9 @@ class Pypi(Source):
     DEFAULT_PACKAGE_URL = "https://pypi.python.org/pypi/{}/json"
 
     @classmethod
-    def _possible_names(cls, name: str) -> List[str]:
-        names = list(super()._possible_names(name))
+    def _possible_names(cls, package: PackageInfo) -> List[str]:
+        names = list(super()._possible_names(package))
+        name = package.get_name()
 
         if name.startswith('python-'):
             names.append(name[len('python-'):])

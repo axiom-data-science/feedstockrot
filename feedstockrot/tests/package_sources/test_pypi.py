@@ -4,6 +4,7 @@ from feedstockrot.package import Package
 from packaging.version import Version
 from ..helpers.mock.mock import Mocker
 from ..helpers.mock.pypi import PypiMock
+from ..helpers.packageinfo import PackageInfoFake
 
 
 class TestPypi(TestCase):
@@ -16,7 +17,7 @@ class TestPypi(TestCase):
         }
 
         for package_name in package_names:
-            possible = Pypi._possible_names(package_name)
+            possible = Pypi._possible_names(PackageInfoFake(package_name))
             self.assertListEqual(
                 [package_name, name],
                 possible
