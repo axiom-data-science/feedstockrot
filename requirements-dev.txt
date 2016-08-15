@@ -1,3 +1,4 @@
 pytest
 coverage
 pytest-cov
+responses =0.5.*
