@@ -1,4 +1,19 @@
-[![Build Status](https://travis-ci.org/axiom-data-science/feedstockrot.svg)](https://travis-ci.org/axiom-data-science/feedstockrot)
+# feedstockrot [![Build Status](https://travis-ci.org/axiom-data-science/feedstockrot.svg)](https://travis-ci.org/axiom-data-science/feedstockrot)
+
+Check conda-forge package versions against their sources to determine if they are out of date. 
+An example:
+
+```
+$ feedstockrot cherrypy matplotlib flake8 docker-py netcdf4 redis-py 
+Up-to-date:
+- netcdf4
+- redis-py
+- matplotlib
+Upgradeable:
+- cherrypy: 6.1.1 -> 7.1.0
+- docker-py: 1.8.1 -> 1.9.0
+- flake8: 2.6.2 -> 3.0.4
+```
 
 ### Installation
 
