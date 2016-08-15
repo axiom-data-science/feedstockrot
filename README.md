@@ -28,3 +28,7 @@ To check all of *your* feedstocks, export a GitHub token and run:
 export FEEDSTOCKROT_GITHUB_TOKEN=your-github-token
 feedstockrot --github
 ```
+
+***
+
+Brought to you by [Axiom Data Science](http://www.axiomdatascience.com/).
