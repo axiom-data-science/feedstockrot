@@ -1,15 +1,19 @@
 from setuptools import setup, find_packages
 
+
 setup(
     name="feedstockrot",
+    version="1.0.0",
     description="Utility to compare conda-forge feedstock versions to their source",
     author="Axiom Data Science",
     author_email="kyle@axiomdatascience.com",
     packages=find_packages(),
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
-        'Programming Language :: Python',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3 :: Only',
+        'Topic :: Software Development',
     ],
     entry_points={
         'console_scripts': [
