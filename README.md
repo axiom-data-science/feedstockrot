@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/axiom-data-science/feedstockrot.svg)](https://travis-ci.org/axiom-data-science/feedstockrot)
+
 ### Installation
 
 Setup a conda environment and install dependencies:
