@@ -52,7 +52,7 @@ class Github(Source):
 
     @classmethod
     def _fetch_tags(cls, name: str) -> Dict:
-        response = requests.get(cls._REFS_URL.format(name))
+        response = requests.get(cls._TAGS_URL.format(name))
         if response.status_code != 200:
             return None
         tags_data = response.json()
