@@ -50,7 +50,7 @@ feedstockrot --github
 Setup a conda environment and install dependencies:
 
 ```bash
-conda create -name feedstockrot-dev --file requirements.txt python=3.5
+conda create --name feedstockrot-dev --file requirements.txt python=3.5
 source activate feedstockrot-dev
 conda install --file requirements-dev.txt
 ```
