@@ -21,7 +21,7 @@ class Jinja2NullUndefined(jinja2.Undefined):
 class Condaforge(Source):
 
     _DEFAULT_OWNER = 'conda-forge'
-    _DEFAULT_PLATFORMS = ['linux-64', 'osx-64', 'win-64']
+    _DEFAULT_PLATFORMS = ['noarch', 'linux-64', 'osx-64', 'win-64']
     _DEFAULT_REPODATA_URL = 'https://conda.anaconda.org/{}/{}/repodata.json'
     _DEFAULT_RECIPE_URL = 'https://raw.githubusercontent.com/conda-forge/{}-feedstock/master/recipe/meta.yaml'
 
